@@ -1,28 +1,28 @@
 # Obsidian Vault Assistant
 
-Obsidian Vault Assistant 是一个本地优先的 Codex skill 和 MCP 服务，帮助用户把 Obsidian Markdown 库变成可检索、可维护的知识系统。它会发现配置范围内的多个 vault，按 Raw、证据/中间层、Wiki 三层检索，只读取相关章节，并把每次写入先变成可审阅计划。
+Obsidian Vault Assistant is a local-first Codex skill and MCP server for people who want a searchable, maintainable Markdown knowledge base. It discovers configured Obsidian vaults, searches a three-layer model (Raw, evidence/middle, and Wiki), reads only the relevant chapter, and stages every change for explicit review.
 
-## 能力
+## What it does
 
-- 检查操作系统、CPU 架构、Python、Obsidian 安装状态和候选 vault 根目录。
-- 在 macOS、Windows x86_64 和 Linux 上发现可用包管理器时生成安装计划；没有明确确认不会执行安装器。
-- 支持 iCloud Drive、本地目录，以及 `OBSIDIAN_VAULT_ROOT`/`OBSIDIAN_VAULT_PATH` 配置的多个 vault。
-- 速度与准确度平衡：优先查中间层和 Wiki，必要时或结构化层没有命中时再回 Raw。
-- 归档上传文件，并拆成原始附件、Raw 笔记和 evidence 卡片；不支持的二进制文件只归档，不猜测内容。
-- 使用 SHA-256 指纹、排他创建、路径检查和 plan + confirm 双阶段写入。
+- Checks the operating system, CPU architecture, Python runtime, Obsidian installation, and candidate vault roots.
+- Provides an install plan for macOS, Windows x86_64, and Linux when a supported package manager is available. The plan is explicit and no installer runs without confirmation.
+- Finds multiple vaults under iCloud Drive, local folders, or `OBSIDIAN_VAULT_ROOT`/`OBSIDIAN_VAULT_PATH`.
+- Balances speed and accuracy: middle/Wiki first, Raw on demand or when structured matches are absent.
+- Archives uploaded files and decomposes them into an original attachment, a Raw note, and an evidence card. Unsupported binary files are archived without guessed content.
+- Uses SHA-256 fingerprints, exclusive creation, path checks, and a plan-plus-confirm transaction for writes.
 
-云同步不会由本 skill 自动配置。iCloud Drive、OneDrive、Syncthing 或其他同步服务请由用户自行设置。
+Cloud sync is intentionally not automated. Configure iCloud Drive, OneDrive, Syncthing, or another provider yourself.
 
-## 在 Codex 中安装
+## Install in Codex
 
-1. 下载或克隆本仓库到 Codex 支持的本地插件目录。
-2. 保持仓库根目录结构不变，使 `.codex-plugin/plugin.json`、`.mcp.json`、`skills/` 和 `scripts/` 位于同一层。
-3. 重新加载 Codex，调用 **Obsidian Vault Assistant**。
-4. 第一次使用时先执行环境检查，再按返回的 vault 选择和结构初始化计划操作。
+1. Download or clone this repository into the local plugin directory supported by your Codex installation.
+2. Keep the repository root as the plugin root so `.codex-plugin/plugin.json`, `.mcp.json`, `skills/`, and `scripts/` stay together.
+3. Reload Codex and invoke **Obsidian Vault Assistant**.
+4. On first use, run the environment check and follow the displayed vault-selection and bootstrap plan.
 
-MCP 配置使用 `python3`、相对脚本路径和 `cwd: "."`，不含机器专属绝对路径。Windows 请确保 Python 的 `python3` 命令可用；如果本机只有 `python`，在本地安装副本中把命令改为 `python`。
+The MCP configuration uses `python3`, a relative script path, and `cwd: "."`; it contains no machine-specific absolute paths. On Windows, use a Python installation whose `python3` command is available, or adjust the command in your local installation to `python`.
 
-## 查询示例
+## Typical retrieval
 
 ```text
 check_environment()
@@ -32,28 +32,27 @@ search_tiered(query="...", scope="auto", verify_with_raw=false)
 read_note_section(vault_path=..., file_path=..., heading=...)
 ```
 
-基于知识库的回答必须包含：调查结论、Raw 溯源、可信度分析。找不到相关笔记时要明确说明，不能把没有证据的常识写成库内事实。
+Answers grounded in a vault must contain an investigation conclusion, Raw provenance, and confidence analysis. When no relevant note exists, say so explicitly instead of filling the gap with unstated general knowledge.
 
-## 上传示例
+## Typical upload
 
 ```text
 inspect_uploaded_file(upload_path="...", vault_path=...)
 plan_file_ingest(upload_path="...", vault_path=..., title="...", claim="...")
-apply_vault_plan(plan_id="...", confirm=true)  # 仅在用户确认准确计划后调用
+apply_vault_plan(plan_id="...", confirm=true)  # only after exact-plan approval
 ```
 
-完整 SOP 见 [docs/TUTORIAL.zh-CN.md](docs/TUTORIAL.zh-CN.md) 和 [docs/TUTORIAL.md](docs/TUTORIAL.md)。本地隐私边界见 [SECURITY.md](SECURITY.md)。
+See [docs/TUTORIAL.md](docs/TUTORIAL.md) and [docs/TUTORIAL.zh-CN.md](docs/TUTORIAL.zh-CN.md) for the complete SOP. See [SECURITY.md](SECURITY.md) for local privacy boundaries.
 
-## 开发检查
+## Development checks
 
 ```bash
 python3 -m py_compile scripts/environment.py scripts/vault_server.py
 python3 -m unittest -v tests/test_dialogues.py
 ```
 
-测试只在临时 vault 中写入，不会修改用户真实 Obsidian 笔记。
+The tests create temporary vaults. They do not write to a user's real Obsidian vault.
 
-## 许可证
+## License
 
-MIT，见 [LICENSE](LICENSE)。
-()
+MIT. See [LICENSE](LICENSE).
