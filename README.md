@@ -1,4 +1,4 @@
-[README.zh-CN.md](https://github.com/user-attachments/files/31703451/README.zh-CN.md)[Uploading README.zh-CN.md…]# Obsidian Vault Assistant
+# Obsidian Vault Assistant
 
 Obsidian Vault Assistant 是一个本地优先的 Codex skill 和 MCP 服务，帮助用户把 Obsidian Markdown 库变成可检索、可维护的知识系统。它会发现配置范围内的多个 vault，按 Raw、证据/中间层、Wiki 三层检索，只读取相关章节，并把每次写入先变成可审阅计划。
 
